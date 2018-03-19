@@ -1,6 +1,9 @@
-ImaginationMedia WebPayment Extension
+ImaginationMedia WebPayment - Magento 2 Module
 =====================
 PaymentRequest lets you accept payment from different payment methods.
+
+![Imagination Media - Magento2 WebPayment](https://media.giphy.com/media/1fkd4JT1Aj7hLBsG0Z/giphy.gif)
+![RequestPaymentAPI](https://media.giphy.com/media/8375Cq2Vjq7xypjheQ/giphy.gif)
 
 Facts
 -----
