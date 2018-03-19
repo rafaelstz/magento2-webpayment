@@ -1,0 +1,24 @@
+{
+    "name": "imaginationmedia/module-webpayment",
+    "description": "PaymentRequest lets you accept payment from different payment methods.",
+    "type": "magento2-module",
+    "license": [
+        "proprietary"
+    ],
+    "authors":[
+        {
+            "name":"Rafael Correa Gomes",
+            "email":"rafael@imaginationmedia.com"
+        }
+    ],
+    "require": {
+    },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "ImaginationMedia\\WebPayment\\": ""
+        }
+    }
+}

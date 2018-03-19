@@ -1,0 +1,125 @@
+<?php
+// @codingStandardsIgnoreFile
+
+/** @var $block \ImaginationMedia\WebPayment\Block\Webpayment */
+
+?>
+<script>
+    function initPaymentRequest() {
+
+        var networks = [
+                'visa', 'mastercard', 'amex', 'discover', 'maestro',
+                'diners', 'jcb', 'unionpay', 'bitcoin'
+            ];
+        var types = ['debit', 'credit', 'prepaid'];
+        var supportedInstruments = [{
+            supportedMethods: networks,
+        }, {
+            supportedMethods: ['basic-card'],
+            data: {supportedNetworks: networks, supportedTypes: types},
+        }];
+        var details = {
+            displayItems: [
+            <?php foreach ($block->getAllItems() as $item){ ?>
+                {
+                    label: '<?= $item->getData('name') ?>',
+                    amount: { currency: '<?= $block->getCurrency() ?>', value: '<?= $item->getData('price') ?>' }
+                },
+            <?php } ?>
+                {
+                label: 'Subtotal',
+                amount: { currency: '<?= $block->getCurrency() ?>', value: '<?= $block->getSubTotal() ?>' }
+                }
+            ],
+            total: {
+                label: 'Total due',
+                amount: { currency: '<?= $block->getCurrency() ?>', value: '<?= $block->getTotal() ?>' }
+            },
+            shippingOptions: [
+                {
+                    id: 'free',
+                    label: 'Free Shipping',
+                    amount: {currency: 'USD', value: '0.00'},
+                },
+                {
+                    id: 'flaterate',
+                    label: 'Flat Rate',
+                    amount: {currency: 'USD', value: '5.00'},
+                    selected: true,
+                },
+                {
+                    id: 'bestway',
+                    label: 'Best Way',
+                    amount: {currency: 'USD', value: '15.00'},
+                },
+            ],
+        };
+
+        var options = {
+            requestShipping: true,
+            requestPayerEmail: true,
+            requestPayerPhone: true,
+            requestPayerName: true
+        };
+
+        // Initialization
+        return new PaymentRequest(supportedInstruments, details, options);
+
+    }
+
+    /**
+     * Invokes PaymentRequest for credit cards.
+     *
+     * @param {PaymentRequest} request The PaymentRequest object.
+     */
+    function onBuyClicked(request) {
+        request.show().then(function(instrumentResponse) {
+            sendPaymentToServer(instrumentResponse);
+        })
+            .catch(function(err) {
+                console.log(err);
+            });
+    }
+
+    /**
+     * Simulates processing the payment data on the server.
+     *
+     * @param {PaymentResponse} instrumentResponse The payment information to
+     * process.
+     */
+    function sendPaymentToServer(instrumentResponse) {
+        // There's no server-side component of these samples. No transactions are
+        // processed and no money exchanged hands. Instantaneous transactions are not
+        // realistic. Add a 2 second delay to make it seem more real.
+        window.setTimeout(function() {
+            instrumentResponse.complete('success')
+                .then(function() {
+                    document.getElementById('result').innerHTML =
+                        instrumentToJsonString(instrumentResponse);
+                })
+                .catch(function(err) {
+                    console.log(err);
+                });
+        }, 2000);
+    }
+
+    /**
+     * Converts the payment instrument into a JSON string.
+     *
+     * @private
+     * @param {PaymentResponse} instrument The instrument to convert.
+     * @return {string} The JSON string representation of the instrument.
+     */
+    function instrumentToJsonString(instrument) {
+        var details = instrument.details;
+        // details.cardNumber = 'XXXX-XXXX-XXXX-' + details.cardNumber.substr(12);
+        // details.cardSecurityCode = '***';
+
+        return JSON.stringify({
+            methodName: instrument.methodName,
+            details: details,
+        }, undefined, 2);
+    }
+
+    // payButton.setAttribute('style', 'display: none;');
+</script>
