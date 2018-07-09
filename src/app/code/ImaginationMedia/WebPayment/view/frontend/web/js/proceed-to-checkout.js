@@ -12,12 +12,12 @@ define([
                 customer = customerData.get('customer');
 
             event.preventDefault();
-
-            if (!customer().firstname && cart().isGuestCheckoutAllowed === false) {
-                authenticationPopup.showModal();
-
-                return false;
-            }
+            //
+            // if (!customer().firstname && cart().isGuestCheckoutAllowed === false) {
+            //     authenticationPopup.showModal();
+            //
+            //     return false;
+            // }
 
             if (window.PaymentRequest) {
                 var request = initPaymentRequest();

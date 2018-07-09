@@ -78,7 +78,7 @@ define([
                 if (window.PaymentRequest) {
                     var request = initPaymentRequest();
                     onBuyClicked(request);
-                    request = initPaymentRequest();
+                    // request = initPaymentRequest();
                 } else {
                     location.href = this.options.url.checkout;
                 }

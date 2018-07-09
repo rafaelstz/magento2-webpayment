@@ -2,23 +2,24 @@
 // @codingStandardsIgnoreFile
 
 /** @var $block \ImaginationMedia\WebPayment\Block\Webpayment */
-
+//var_dump($_COOKIE['webpayment']);
+//var_dump(json_decode($_COOKIE['webpayment'],true));exit;
 ?>
 <script>
     function initPaymentRequest() {
 
-        var networks = [
-                'visa', 'mastercard', 'amex', 'discover', 'maestro',
-                'diners', 'jcb', 'unionpay', 'bitcoin'
-            ];
-        var types = ['debit', 'credit', 'prepaid'];
-        var supportedInstruments = [{
+        const networks = [
+            'visa', 'mastercard', 'amex', 'discover', 'maestro',
+            'diners', 'jcb', 'unionpay', 'bitcoin'
+        ];
+        const types = ['debit', 'credit', 'prepaid'];
+        const supportedInstruments = [{
             supportedMethods: networks,
         }, {
             supportedMethods: ['basic-card'],
             data: {supportedNetworks: networks, supportedTypes: types},
         }];
-        var details = {
+        const details = {
             displayItems: [
             <?php foreach ($block->getAllItems() as $item){ ?>
                 {
@@ -94,8 +95,9 @@
         window.setTimeout(function() {
             instrumentResponse.complete('success')
                 .then(function() {
-                    document.getElementById('result').innerHTML =
-                        instrumentToJsonString(instrumentResponse);
+                    setCookie('webpayment',instrumentToJsonString(instrumentResponse),1);
+                    window.location.href = '<?= $this->getBaseUrl(); ?>webpayment';
+                    console.log(instrumentToJsonString(instrumentResponse));
                 })
                 .catch(function(err) {
                     console.log(err);
@@ -119,6 +121,25 @@
             methodName: instrument.methodName,
             details: details,
         }, undefined, 2);
+    }
+
+    function setCookie(c_name, value, exdays) {
+        var exdate = new Date();
+        exdate.setDate(exdate.getDate() + exdays);
+        var c_value = escape(value) + ((exdays == null) ? "" : "; expires=" + exdate.toUTCString());
+        document.cookie = c_name + "=" + c_value;
+    }
+
+    function getCookie(c_name) {
+        var i, x, y, ARRcookies = document.cookie.split(";");
+        for (i = 0; i < ARRcookies.length; i++) {
+            x = ARRcookies[i].substr(0, ARRcookies[i].indexOf("="));
+            y = ARRcookies[i].substr(ARRcookies[i].indexOf("=") + 1);
+            x = x.replace(/^\s+|\s+$/g, "");
+            if (x == c_name) {
+                return unescape(y);
+            }
+        }
     }
 
     // payButton.setAttribute('style', 'display: none;');

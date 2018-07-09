@@ -1,0 +1,60 @@
+<?php
+// @codingStandardsIgnoreFile
+
+/** @var $block \ImaginationMedia\WebPayment\Block\Webpayment */
+$webpayment = json_decode($_COOKIE['webpayment'],true)['details']['billingAddress'];
+
+
+$name = $webpayment["recipient"];
+$firstName = explode(" ", $webpayment["recipient"])[0];
+$lastName = str_replace($firstName,' ',$name);
+$street = $webpayment['addressLine'];
+$neighborhood = $webpayment['dependentLocality'];
+$city = $webpayment['city'];
+$region = $webpayment['region'];
+$country = $webpayment['country'];
+$phone = $webpayment['phone'];
+$postalCode = $webpayment['postalCode'];
+
+$items = [];
+foreach ($block->getAllItems() as $item){
+    $itemId = $item->getData('item_id');
+    $itemQty = $item->getData('qty');
+    $itemPrice = $item->getData('price');
+    array_push($items, ['product_id'=>$itemId,'qty'=>$itemQty, 'price'=>$itemPrice]);
+}
+
+$tempOrder=[
+    'currency_id'  => 'USD',
+    'email'        => 'roni_cost@example.com', //buyer email id
+    'shipping_address' =>[
+        'firstname'    => $firstName, //address Details
+        'lastname'     => $lastName,
+        'street' => $street,
+        'city' => $city,
+        'country_id' => $country,
+        'region' => $region,
+        'postcode' => $postalCode,
+        'telephone' => $phone,
+        'save_in_address_book' => 1
+    ],
+    'items' => $items
+];
+$orderId = $block->createOrder($tempOrder);
+?>
+<div class="checkout-success">
+        <h1><?php echo __('Congrats!'); ?></h1>
+<!--        --><?php //if ($block->getOrderId()):?>
+            <?php if ($block->getCanViewOrder()) :?>
+                <p><?= __('Your order number is: %1.', sprintf('<a href="%s" class="order-number"><strong>%s</strong></a>', $block->escapeHtml($block->getViewOrderUrl()), $block->escapeHtml($orderId))) ?></p>
+            <?php  else :?>
+                <p><?= __('Your order # is: <span>%1</span>.', $block->escapeHtml($orderId)) ?></p>
+            <?php endif;?>
+            <p><?= /* @escapeNotVerified */ __('We\'ll email you an order confirmation with details and tracking info.') ?></p>
+<!--        --><?php //endif;?>
+<?php
+//    var_dump($webpayment[0]['billingAddress']);
+//    var_dump(print_r($block->getAllItems()));
+//var_dump('===========');
+//    var_dump($orderId);exit;
+//    var_dump($webpayment);exit;
