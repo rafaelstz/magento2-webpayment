@@ -79,10 +79,11 @@ class Webpayment extends Template
 
     /**
      * @param $orderData
+     * @return int
      */
     public function createOrder($orderData){
         try {
-            $this->_helper->createWebPaymentOrder($orderData);
+            return $this->_helper->createWebPaymentOrder($orderData);
         } catch (CouldNotSaveException $e) {
             var_dump($e);
         } catch (NoSuchEntityException $e) {
@@ -90,6 +91,27 @@ class Webpayment extends Template
         } catch (LocalizedException $e) {
             var_dump($e);
         }
+    }
+
+    public function deleteQuoteItems(){
+        $checkoutSession = $this->getCheckoutSession();
+        $allItems = $checkoutSession->getQuote()->getAllVisibleItems();//returns all teh items in session
+        foreach ($allItems as $item) {
+            $itemId = $item->getItemId();//item id of particular item
+            $quoteItem=$this->getItemModel()->load($itemId);//load particular item which you want to delete by his item id
+            $quoteItem->delete();//deletes the item
+        }
+    }
+    public function getCheckoutSession(){
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();//instance of object manager
+        $checkoutSession = $objectManager->get('Magento\Checkout\Model\Session');//checkout session
+        return $checkoutSession;
+    }
+
+    public function getItemModel(){
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();//instance of object manager
+        $itemModel = $objectManager->create('Magento\Quote\Model\Quote\Item');//Quote item model to load quote item
+        return $itemModel;
     }
 
 }

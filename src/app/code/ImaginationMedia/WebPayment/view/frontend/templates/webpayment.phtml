@@ -9,15 +9,24 @@
     function initPaymentRequest() {
 
         const networks = [
-            'visa', 'mastercard', 'amex', 'discover', 'maestro',
-            'diners', 'jcb', 'unionpay', 'bitcoin'
+            'visa', 'mastercard'
         ];
         const types = ['debit', 'credit', 'prepaid'];
         const supportedInstruments = [{
-            supportedMethods: networks,
+            supportedMethods: 'basic-card',
+            data: {
+                supportedNetworks: networks,
+                supportedTypes: types
+            }
         }, {
-            supportedMethods: ['basic-card'],
-            data: {supportedNetworks: networks, supportedTypes: types},
+            supportedMethods: 'https://apple.com/apple-pay',
+            data: {
+                version: 2,
+                supportedNetworks: networks,
+                countryCode: 'US',
+                merchantIdentifier: 'imagination.media.sample',
+                merchantCapabilities: ['supportsDebit', 'supportsCredit', 'supports3DS']
+            }
         }];
         const details = {
             displayItems: [
@@ -97,7 +106,7 @@
                 .then(function() {
                     setCookie('webpayment',instrumentToJsonString(instrumentResponse),1);
                     window.location.href = '<?= $this->getBaseUrl(); ?>webpayment';
-                    console.log(instrumentToJsonString(instrumentResponse));
+                    // console.log(instrumentToJsonString(instrumentResponse));
                 })
                 .catch(function(err) {
                     console.log(err);

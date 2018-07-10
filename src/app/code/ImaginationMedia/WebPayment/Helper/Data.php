@@ -118,7 +118,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $cart->save();
         $cart = $this->cartRepositoryInterface->get($cart->getId());
         $order_id = $this->cartManagementInterface->placeOrder($cart->getId());
-//        return $order_id;
-        var_dump($order_id);exit;
+        return $order_id;
     }
 }
