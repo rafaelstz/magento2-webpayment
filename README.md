@@ -1,14 +1,14 @@
-ImaginationMedia WebPayment - Magento 2 Module
+WebPayment Request API - Magento 2 Module
 =====================
 PaymentRequest lets you accept payment from different payment methods.
 
-![Imagination Media - Magento2 WebPayment](https://media.giphy.com/media/1fkd4JT1Aj7hLBsG0Z/giphy.gif)
+![Rafael Corrêa Gomes - Magento 2 WebPayment](https://media.giphy.com/media/1fkd4JT1Aj7hLBsG0Z/giphy.gif)
 ![RequestPaymentAPI](https://media.giphy.com/media/8375Cq2Vjq7xypjheQ/giphy.gif)
 
 Facts
 -----
 - version: 0.9.0
-- extension key: ImaginationMedia_WebPayment
+- extension key: Rafaelcg_WebPayment
 
 Description
 -----------
@@ -35,21 +35,13 @@ Installation Instructions
 2. Run these commands:
 
 ```
-php -f bin/magento module:enable ImaginationMedia_WebPayment
+php -f bin/magento module:enable Rafaelcg_WebPayment
 php -f bin/magento setup:upgrade
 ```
-
-Support
--------
-If you have any issues with this extension, open an issue on [GitHub](https://github.com/Imagination-Media/ImaginationMedia_WebPayment/issues).
 
 Contribution
 ------------
 Any contribution is highly appreciated. The best way to contribute code is to open a [pull request on GitHub](https://help.github.com/articles/using-pull-requests).
-
-Developer
----------
-[Rafael Corrêa Gomes](https://magento.stackexchange.com/users/16416/rafael-corr%C3%AAa-gomes?tab=profile)
 
 Licence
 -------
@@ -57,4 +49,4 @@ Licence
 
 Copyright
 ---------
-(c) 2018 [ImaginationMedia](https://www.imaginationmedia.com/)
+(c) 2019 [Rafael Corrêa Gomes](https://github.com/rafaelstz)

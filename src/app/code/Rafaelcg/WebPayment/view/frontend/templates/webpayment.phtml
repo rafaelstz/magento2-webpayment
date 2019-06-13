@@ -1,0 +1,155 @@
+<?php
+// @codingStandardsIgnoreFile
+
+/** @var $block \Rafaelcg\WebPayment\Block\Webpayment */
+//var_dump($_COOKIE['webpayment']);
+//var_dump(json_decode($_COOKIE['webpayment'],true));exit;
+?>
+<script>
+    function initPaymentRequest() {
+
+        const networks = [
+            'visa', 'mastercard'
+        ];
+        const types = ['debit', 'credit', 'prepaid'];
+        const supportedInstruments = [{
+            supportedMethods: 'basic-card',
+            data: {
+                supportedNetworks: networks,
+                supportedTypes: types
+            }
+        }, {
+            supportedMethods: 'https://apple.com/apple-pay',
+            data: {
+                version: 2,
+                supportedNetworks: networks,
+                countryCode: 'US',
+                merchantIdentifier: 'imagination.media.sample',
+                merchantCapabilities: ['supportsDebit', 'supportsCredit', 'supports3DS']
+            }
+        }];
+        const details = {
+            displayItems: [
+            <?php foreach ($block->getAllItems() as $item){ ?>
+                {
+                    label: '<?= $item->getData('name') ?>',
+                    amount: { currency: '<?= $block->getCurrency() ?>', value: '<?= $item->getData('price') ?>' }
+                },
+            <?php } ?>
+                {
+                label: 'Subtotal',
+                amount: { currency: '<?= $block->getCurrency() ?>', value: '<?= $block->getSubTotal() ?>' }
+                }
+            ],
+            total: {
+                label: 'Total due',
+                amount: { currency: '<?= $block->getCurrency() ?>', value: '<?= $block->getTotal() ?>' }
+            },
+            shippingOptions: [
+                {
+                    id: 'free',
+                    label: 'Free Shipping',
+                    amount: {currency: 'USD', value: '0.00'},
+                },
+                {
+                    id: 'flaterate',
+                    label: 'Flat Rate',
+                    amount: {currency: 'USD', value: '5.00'},
+                    selected: true,
+                },
+                {
+                    id: 'bestway',
+                    label: 'Best Way',
+                    amount: {currency: 'USD', value: '15.00'},
+                },
+            ],
+        };
+
+        var options = {
+            requestShipping: true,
+            requestPayerEmail: true,
+            requestPayerPhone: true,
+            requestPayerName: true
+        };
+
+        // Initialization
+        return new PaymentRequest(supportedInstruments, details, options);
+
+    }
+
+    /**
+     * Invokes PaymentRequest for credit cards.
+     *
+     * @param {PaymentRequest} request The PaymentRequest object.
+     */
+    function onBuyClicked(request) {
+        request.show().then(function(instrumentResponse) {
+            sendPaymentToServer(instrumentResponse);
+        })
+            .catch(function(err) {
+                console.log(err);
+            });
+    }
+
+    /**
+     * Simulates processing the payment data on the server.
+     *
+     * @param {PaymentResponse} instrumentResponse The payment information to
+     * process.
+     */
+    function sendPaymentToServer(instrumentResponse) {
+        // There's no server-side component of these samples. No transactions are
+        // processed and no money exchanged hands. Instantaneous transactions are not
+        // realistic. Add a 2 second delay to make it seem more real.
+        window.setTimeout(function() {
+            instrumentResponse.complete('success')
+                .then(function() {
+                    setCookie('webpayment',instrumentToJsonString(instrumentResponse),1);
+                    window.location.href = '<?= $this->getBaseUrl(); ?>webpayment';
+                    // console.log(instrumentToJsonString(instrumentResponse));
+                })
+                .catch(function(err) {
+                    console.log(err);
+                });
+        }, 2000);
+    }
+
+    /**
+     * Converts the payment instrument into a JSON string.
+     *
+     * @private
+     * @param {PaymentResponse} instrument The instrument to convert.
+     * @return {string} The JSON string representation of the instrument.
+     */
+    function instrumentToJsonString(instrument) {
+        var details = instrument.details;
+        // details.cardNumber = 'XXXX-XXXX-XXXX-' + details.cardNumber.substr(12);
+        // details.cardSecurityCode = '***';
+
+        return JSON.stringify({
+            methodName: instrument.methodName,
+            details: details,
+        }, undefined, 2);
+    }
+
+    function setCookie(c_name, value, exdays) {
+        var exdate = new Date();
+        exdate.setDate(exdate.getDate() + exdays);
+        var c_value = escape(value) + ((exdays == null) ? "" : "; expires=" + exdate.toUTCString());
+        document.cookie = c_name + "=" + c_value;
+    }
+
+    function getCookie(c_name) {
+        var i, x, y, ARRcookies = document.cookie.split(";");
+        for (i = 0; i < ARRcookies.length; i++) {
+            x = ARRcookies[i].substr(0, ARRcookies[i].indexOf("="));
+            y = ARRcookies[i].substr(ARRcookies[i].indexOf("=") + 1);
+            x = x.replace(/^\s+|\s+$/g, "");
+            if (x == c_name) {
+                return unescape(y);
+            }
+        }
+    }
+
+    // payButton.setAttribute('style', 'display: none;');
+</script>
